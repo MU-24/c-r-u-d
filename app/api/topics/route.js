@@ -1,23 +1,56 @@
+import Cors from "micro-cors";
 import { NextResponse } from "next/server";
 import connectMongoDB from "../../../libs/mongodb";
 import Topic from "../../../models/topic";
 
-export async function POST(request) {
-  const { title, description } = await request.json();
+const cors = Cors({
+  allowMethods: ["GET", "POST", "PUT", "DELETE"],
+  origin: "https://crud-app24.netlify.app", // Adjust the origin as needed
+});
+
+export const config = {
+  api: {
+    bodyParser: true,
+  },
+};
+
+async function handler(req, res) {
+  const { method } = req;
+
   await connectMongoDB();
-  await Topic.create({ title, description });
-  return NextResponse.json({ message: "Topic created" }, { status: 201 });
+
+  switch (method) {
+    case "GET":
+      const topics = await Topic.find();
+      return res.status(200).json({ topics });
+    case "POST":
+      const { title, description } = req.body;
+      await Topic.create({ title, description });
+      return res.status(201).json({ message: "Topic created" });
+    case "PUT":
+      const { id } = req.query;
+      const { newTitle, newDescription } = req.body;
+      const updatedTopic = await Topic.findByIdAndUpdate(
+        id,
+        { title: newTitle, description: newDescription },
+        { new: true }
+      );
+
+      if (!updatedTopic) {
+        return res.status(404).json({ message: "Topic not found" });
+      }
+
+      return res
+        .status(200)
+        .json({ message: "Topic updated", topic: updatedTopic });
+    case "DELETE":
+      const deleteId = req.query.id;
+      await Topic.findByIdAndDelete(deleteId);
+      return res.status(200).json({ message: "Topic deleted" });
+    default:
+      res.setHeader("Allow", ["GET", "POST", "PUT", "DELETE"]);
+      return res.status(405).end(`Method ${method} Not Allowed`);
+  }
 }
 
-export async function GET() {
-  await connectMongoDB();
-  const topics = await Topic.find();
-  return NextResponse.json({ topics });
-}
-
-export async function DELETE(request) {
-  const id = request.nextUrl.searchParams.get("id");
-  await connectMongoDB();
-  await Topic.findByIdAndDelete(id);
-  return NextResponse.json({ message: "Topic deleted" }, { status: 200 });
-}
+export default cors(handler);
