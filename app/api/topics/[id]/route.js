@@ -28,3 +28,12 @@ export async function GET(request, { params }) {
   const topic = await Topic.findOne({ _id: id });
   return NextResponse.json({ topic }, { status: 200 });
 }
+
+async function fetchTopics() {
+  if (process.env.NODE_ENV === "production") {
+    const response = await fetch("/api/topics");
+    return await response.json();
+  } else {
+    return mockTopics;
+  }
+}
