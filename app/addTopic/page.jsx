@@ -26,8 +26,8 @@ const Page = () => {
         body: JSON.stringify({ title, description }),
       });
       if (res.ok) {
-          router.refresh();
-          router.push("/");
+        router.push("/");
+        router.refresh();
       } else {
         throw new Error("Failed to create a topic");
       }

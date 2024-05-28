@@ -1,6 +1,6 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
+import Navbar from "../components/Navbar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -15,12 +15,13 @@ export default function RootLayout({ children }) {
       <body className={inter.className}>
         <Navbar />
         <div
-          className=" px-40 mx-auto p-4 min-h-screen "
+          className=" px-40 mx-auto p-4 min-h-screen"
           style={{ backgroundImage: "url('/nav.jpg')" }}
         >
           {children}
         </div>
       </body>
     </html>
+
   );
 }

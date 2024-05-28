@@ -1,7 +1,7 @@
 import React from "react";
-import EditTopicForm from "@/components/EditTopicForm";
-import connectMongoDB from "@/libs/mongodb";
-import Topic from "@/models/topic";
+import EditTopicForm from "../../../components/EditTopicForm";
+import connectMongoDB from "../../../libs/mongodb";
+import Topic from "../../../models/topic";
 
 const getTopicById = async (id) => {
   await connectMongoDB();
